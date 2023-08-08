@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 """Asyncchronous function that create a tasks"""
 import asyncio
 from typing import Any
