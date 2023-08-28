@@ -2,7 +2,7 @@
 """Python testcase module"""
 import unittest
 from parameterized import parameterized
-from utils import access_nested_map, get_json
+from utils import access_nested_map, get_json, memoize
 from unittest.mock import patch, Mock
 
 
@@ -45,6 +45,36 @@ class TestGetJson(unittest.TestCase):
         result = get_json(test_url)
         mock_get.assert_called_once_with(test_url)
         self.assertEqual(result, test_payload)
+
+
+class TestClass:
+    """memozation test class"""
+    def a_method(self):
+        """method that returns 42"""
+        return 42
+
+    @memoize
+    def a_property(self):
+        """A memoized property"""
+        return self.a_method()
+
+
+class TestMemoize(unittest.TestCase):
+    """Test suite for memoize decorator"""
+    @patch.object(TestClass, 'a_method')
+    def test_memoize(self, mock_method):
+        """Testing thr memoize decorator"""
+        instance = TestClass()
+
+        mock_method.return_value = 42
+
+        result1 = instance.a_property
+        result2 = instance.a_property
+
+        mock_method.assert_called_once()
+
+        self.assertEqual(result1, 42)
+        self.assertEqual(result2, 42)
 
 
 if __name__ == "__main__":
