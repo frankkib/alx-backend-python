@@ -4,6 +4,7 @@ import unittest
 from parameterized import parameterized
 from utils import access_nested_map, get_json, memoize
 from unittest.mock import patch, Mock
+from client import GithubOrgClient
 
 
 class TestAccessNestedMap(unittest.TestCase):
@@ -75,6 +76,26 @@ class TestMemoize(unittest.TestCase):
 
         self.assertEqual(result1, 42)
         self.assertEqual(result2, 42)
+
+
+class TestGithubOrgClient(unittest.TestCase):
+    """The test suite for the GithubOrgClient class"""
+    @parameterized.expand([
+        ("google",),
+        ("abc",)
+        ])
+    @patch("client.get_json")
+    def test_org(self, org_name, mock_get_json):
+        """Test the client method"""
+        result = {"name": org_name}
+        mock_get_json.return_value = result
+
+        client = GithubOrgClient(org_name)
+        response = client.org
+
+        mock_get_json.assert_called_once_with(
+                "https://api.github.com/orgs/{}".format(org_name))
+        self.assertEqual(response, result)
 
 
 if __name__ == "__main__":
